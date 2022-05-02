@@ -22,6 +22,7 @@ settings:
   default_datastore: azureml:workspaceblobstore
 
 jobs:
+
   fix-missing-job:
     type: command
     code: model
