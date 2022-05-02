@@ -1,11 +1,11 @@
 $schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
 type: pipeline
-experiment_name: diabetes-pipeline-example
+experiment_name: diabetes-pipeline-github
 
 # <inputs_and_outputs>
 inputs:
   pipeline_job_input: #using dataset, can use datastore + datapath also
-    dataset: azureml:diabetes-data:1
+    path: azureml:diabetes-data:1
     mode: download
 
 outputs: 
@@ -19,13 +19,12 @@ outputs:
 
 # <jobs>
 settings:
-  datastore: azureml:workspaceblobstore
+  default_datastore: azureml:workspaceblobstore
 
 jobs:
   fix-missing-job:
     type: command
-    code:
-      local_path: model
+    code: model
     inputs:
       input_data: ${{inputs.pipeline_job_input}}
     outputs:
@@ -36,8 +35,7 @@ jobs:
 
   normalize-job:
     type: command
-    code:
-      local_path: model
+    code: model
     inputs:
       input_data: ${{jobs.fix-missing-job.outputs.output_data}}
     outputs:
@@ -48,8 +46,7 @@ jobs:
 
   train-job:
     type: command
-    code:
-      local_path: model
+    code: model
     inputs:
       training_data: ${{jobs.normalize-job.outputs.output_data}}
     outputs:
