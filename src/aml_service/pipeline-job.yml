@@ -2,57 +2,56 @@ $schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
 type: pipeline
 experiment_name: diabetes-pipeline-github
 
-# <inputs_and_outputs>
-inputs:
-  pipeline_job_input: #using dataset, can use datastore + datapath also
-    path: azureml:diabetes-data:1
-    mode: download
-
-outputs: 
-  pipeline_job_cleaned_data:
-    mode: upload
-  pipeline_job_normalized_data:
-    mode: upload
-  pipeline_job_trained_model:
-    mode: upload
-# </inputs_and_outputs>
-
-# <jobs>
 settings:
   default_datastore: azureml:workspaceblobstore
 
 jobs:
 
-  fix_missing_job:
+  fix-missing-job:
     type: command
-    code: model
     inputs:
-      input_data: ${{inputs.pipeline_job_input}}
+      raw_data:
+        path: azureml:diabetes-data:1
     outputs:
-      output_data: ${{outputs.pipeline_job_cleaned_data}}
-    command: python fix-missing-data.py --input_data ${{inputs.input_data}} --output_data ${{outputs.output_data}}
-    compute: azureml:aml-cluster
+      prep_data:
+        mode: upload
+    code: model
     environment: azureml:basic-env-scikit:2
+    compute: azureml:aml-cluster
+    command: >-
+      python fix-missing-data.py 
+      --input_data ${{inputs.raw_data}} 
+      --output_data ${{outputs.prep_data}}
 
-  normalize_job:
+  normalize-job:
     type: command
-    code: model
     inputs:
-      input_data: ${{jobs.fix-missing-job.outputs.output_data}}
+      clean_data: ${{parent.jobs.fix-missing-job.outputs.prep_data}}
     outputs:
-      output_data: ${{outputs.pipeline_job_normalized_data}}
-    command: python normalize-data.py --input_data ${{inputs.input_data}} --output_data ${{outputs.output_data}}
-    compute: azureml:aml-cluster
+      normalized_data:
+      mode: upload
+    code: model
     environment: azureml:basic-env-scikit:2
+    compute: azureml:aml-cluster
+    command: >-
+      python normalize-data.py 
+      --input_data ${{inputs.clean_data}} 
+      --output_data ${{outputs.normalized_data}}
 
-  train_job:
+  train-job:
     type: command
-    code: model
     inputs:
-      training_data: ${{jobs.normalize-job.outputs.output_data}}
+      training_data: ${{parent.jobs.normalize-job.outputs.normalized_data}}
     outputs:
-      model_output: ${{outputs.pipeline_job_trained_model}}
-    command: python train-decision-tree.py --training_data ${{inputs.training_data}} --model_output ${{outputs.model_output}}
-    compute: azureml:aml-cluster
+      model_output:
+        mode: upload
+    code: model
     environment: azureml:basic-env-scikit:2
-# </jobs>
+    compute: azureml:aml-cluster
+    command: >-
+      python train-decision-tree.py 
+      --training_data ${{inputs.training_data}} 
+      --model_output ${{outputs.model_output}}
+
+
+
