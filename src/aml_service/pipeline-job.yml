@@ -14,7 +14,7 @@ jobs:
         path: azureml:diabetes-data:1
     outputs:
       prep_data:
-        mode: upload
+        mode: rw_mount
     code: model
     environment: azureml:basic-env-scikit:2
     compute: azureml:aml-cluster
@@ -29,7 +29,7 @@ jobs:
       clean_data: ${{parent.jobs.fix_missing_job.outputs.prep_data}}
     outputs:
       normalized_data:
-      mode: upload
+        mode: rw_mount
     code: model
     environment: azureml:basic-env-scikit:2
     compute: azureml:aml-cluster
@@ -44,7 +44,7 @@ jobs:
       training_data: ${{parent.jobs.normalize_job.outputs.normalized_data}}
     outputs:
       model_output:
-        mode: upload
+        mode: rw_mount
     code: model
     environment: azureml:basic-env-scikit:2
     compute: azureml:aml-cluster
