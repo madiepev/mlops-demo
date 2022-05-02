@@ -23,7 +23,7 @@ settings:
 
 jobs:
 
-  fix-missing-job:
+  fix_missing_job:
     type: command
     code: model
     inputs:
@@ -34,7 +34,7 @@ jobs:
     compute: azureml:aml-cluster
     environment: azureml:basic-env-scikit:2
 
-  normalize-job:
+  normalize_job:
     type: command
     code: model
     inputs:
@@ -45,7 +45,7 @@ jobs:
     compute: azureml:aml-cluster
     environment: azureml:basic-env-scikit:2
 
-  train-job:
+  train_job:
     type: command
     code: model
     inputs:
