@@ -7,7 +7,7 @@ settings:
 
 jobs:
 
-  fix-missing-job:
+  fix_missing_job:
     type: command
     inputs:
       raw_data:
@@ -23,10 +23,10 @@ jobs:
       --input_data ${{inputs.raw_data}} 
       --output_data ${{outputs.prep_data}}
 
-  normalize-job:
+  normalize_job:
     type: command
     inputs:
-      clean_data: ${{parent.jobs.fix-missing-job.outputs.prep_data}}
+      clean_data: ${{parent.jobs.fix_missing_job.outputs.prep_data}}
     outputs:
       normalized_data:
       mode: upload
@@ -38,10 +38,10 @@ jobs:
       --input_data ${{inputs.clean_data}} 
       --output_data ${{outputs.normalized_data}}
 
-  train-job:
+  train_job:
     type: command
     inputs:
-      training_data: ${{parent.jobs.normalize-job.outputs.normalized_data}}
+      training_data: ${{parent.jobs.normalize_job.outputs.normalized_data}}
     outputs:
       model_output:
         mode: upload
